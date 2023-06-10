@@ -25,22 +25,38 @@ static inline int Wrap(int x, int low, int high) {
 
 
 typedef enum eColor {
-    COLOR_BLACK,
-    COLOR_BLUE,
-    COLOR_GREEN,
-    COLOR_JADE,
-    COLOR_RED,
-    COLOR_PURPLE,
-    COLOR_YELLOW,
-    COLOR_WHITE,
-    COLOR_GRAY,
-    COLOR_LIGHT_BLUE,
-    COLOR_LIGHT_GREEN,
-    COLOR_LIGHT_JADE,
-    COLOR_LIGHT_RED,
-    COLOR_LIGHT_PURPLE,
-    COLOR_LIGHT_YELLOW,
-    COLOR_LIGHT_WHITE
+    FG_BLACK = 0x0000,
+    FG_DARK_BLUE = 0x0001,
+    FG_DARK_GREEN = 0x0002,
+    FG_DARK_CYAN = 0x0003,
+    FG_DARK_RED = 0x0004,
+    FG_DARK_MAGENTA = 0x0005,
+    FG_DARK_YELLOW = 0x0006,
+    FG_GRAY = 0x0007,
+    FG_DARK_GRAY = 0x0008,
+    FG_BLUE = 0x0009,
+    FG_GREEN = 0x000A,
+    FG_CYAN = 0x000B,
+    FG_RED = 0x000C,
+    FG_MAGENTA = 0x000D,
+    FG_YELLOW = 0x000E,
+    FG_WHITE = 0x000F,
+    BG_BLACK = 0x0000,
+    BG_DARK_BLUE = 0x0010,
+    BG_DARK_GREEN = 0x0020,
+    BG_DARK_CYAN = 0x0030,
+    BG_DARK_RED = 0x0040,
+    BG_DARK_MAGENTA = 0x0050,
+    BG_DARK_YELLOW = 0x0060,
+    BG_GRAY = 0x0070,
+    BG_DARK_GRAY = 0x0080,
+    BG_BLUE = 0x0090,
+    BG_GREEN = 0x00A0,
+    BG_CYAN = 0x00B0,
+    BG_RED = 0x00C0,
+    BG_MAGENTA = 0x00D0,
+    BG_YELLOW = 0x00E0,
+    BG_WHITE = 0x00F0,
 } Color;
 
 static void Cursor_Move(int x, int y) {
@@ -56,7 +72,7 @@ static void Cursor_SetVisible(bool visible) {
 }
 
 static void Cursor_SetColor(Color foreground, Color background) {
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), foreground | background << 4);
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), foreground | background);
 }
 
 
@@ -119,8 +135,8 @@ static int g_boardData[] = {
 static const int g_kBoardWidth = 28;
 static const int g_kBoardHeight = 24;
 static const wchar_t* g_tileCharData = L" #.-*";
-static const Color g_tileFgColorDate[] = { COLOR_BLACK, COLOR_BLUE, COLOR_YELLOW, COLOR_GRAY, COLOR_LIGHT_RED };
-static const Color g_tileBgColorDate[] = { COLOR_BLACK, COLOR_BLUE, COLOR_BLACK, COLOR_BLACK, COLOR_BLACK };
+static const Color g_tileFgColorDate[] = { FG_BLACK, FG_DARK_BLUE, FG_DARK_YELLOW, FG_GRAY, FG_RED };
+static const Color g_tileBgColorDate[] = { BG_BLACK, BG_DARK_BLUE, BG_BLACK, BG_BLACK, BG_BLACK };
 
 static void ResetBoard() {
     int index = 0;
@@ -135,14 +151,14 @@ static void ResetBoard() {
 static void DrawBoard() {
     int index = 0;
     Cursor_Move(0, 0);
-    Cursor_SetColor(COLOR_BLACK, COLOR_BLACK);
+    Cursor_SetColor(FG_BLACK, BG_BLACK);
     for (int y = 0; y < g_kBoardHeight; ++y) {
         for (int x = 0; x < g_kBoardWidth; ++x) {
             const int kCurIndexData = g_boardData[index++];
             Cursor_SetColor(g_tileFgColorDate[kCurIndexData], g_tileBgColorDate[kCurIndexData]);
             wprintf(L"%lc", g_tileCharData[kCurIndexData]);
         }
-        Cursor_SetColor(COLOR_BLACK, COLOR_BLACK);
+        Cursor_SetColor(FG_BLACK, BG_BLACK);
         wprintf(L"\n");
     }
 }
@@ -150,7 +166,7 @@ static void DrawBoard() {
 static void FlashBoard(Color color) {
     int index = 0;
     Cursor_Move(0, 0);
-    Cursor_SetColor(color, color);
+    Cursor_SetColor(color, color << 4);
     for (int y = 0; y < g_kBoardHeight; ++y) {
         for (int x = 0; x < g_kBoardWidth; ++x) {
             const int kCurIndexData = g_boardData[index++];
@@ -160,14 +176,14 @@ static void FlashBoard(Color color) {
             }
         }
     }
-    Cursor_SetColor(COLOR_BLACK, COLOR_BLACK);
+    Cursor_SetColor(FG_BLACK, BG_BLACK);
 }
 
 static void Flash(int iter, int timePerIter) {
     for (int i = 0; i < iter; ++i) {
-        FlashBoard(COLOR_WHITE);
+        FlashBoard(FG_GRAY);
         Sleep(timePerIter / 2);
-        FlashBoard(COLOR_BLUE);
+        FlashBoard(FG_DARK_BLUE);
         Sleep(timePerIter / 2);
     }
 }
@@ -253,7 +269,7 @@ static void Player_Reset(Player* this) {
     this->pos = Player_kStartingPoint;
     this->dir = Player_kInitialDirection;
     this->nextDir = DIR_NONE;
-    this->color = COLOR_LIGHT_YELLOW;
+    this->color = FG_YELLOW;
     this->speedPerSecond = 5;
     this->posDeltaTime = 0;
     this->posTimeStep = CLOCKS_PER_SEC / this->speedPerSecond;
@@ -337,9 +353,9 @@ static const Position Ghost_kOutside = { 13, 8 };
 static const Position Ghost_kStartingPoints[4] = { { 13, 8 }, {11 , 11}, {13 , 11}, {15 , 11} };
 static const Direction Ghost_kInitialDirections[4] = { DIR_LEFT, DIR_UP, DIR_DOWN, DIR_UP };
 static const int Ghost_kInitialStayingDurations[4] = { 0, 2, 8, 16 };
-static const Color Ghost_kColors[4] = { COLOR_LIGHT_RED, COLOR_LIGHT_BLUE, COLOR_LIGHT_PURPLE, COLOR_YELLOW };
-static const Color Ghost_kVulnerableColor = COLOR_BLUE;
-static const Color Ghost_kEatenColor = COLOR_WHITE;
+static const Color Ghost_kColors[4] = { FG_RED, FG_BLUE, FG_MAGENTA, FG_DARK_YELLOW };
+static const Color Ghost_kVulnerableColor = FG_DARK_BLUE;
+static const Color Ghost_kEatenColor = FG_GRAY;
 
 static void Ghost_Reset(Ghost* this, GhostType type) {
     this->pos = Ghost_kStartingPoints[type];
@@ -683,7 +699,7 @@ int main(void) {
         selection = -1;
 
         Cursor_Move(0, 0);
-        Cursor_SetColor(COLOR_LIGHT_WHITE, COLOR_BLACK);
+        Cursor_SetColor(FG_WHITE, BG_BLACK);
         wprintf(L"> Start\n");
         wprintf(L"  Quit\n");
 
@@ -740,18 +756,18 @@ int main(void) {
 
         // Draw Panel
         Cursor_Move(31, 0);
-        Cursor_SetColor(COLOR_RED, COLOR_BLACK);
+        Cursor_SetColor(FG_DARK_RED, BG_BLACK);
         wprintf(L"HI-SCORE");
         Cursor_Move(31, 1);
-        Cursor_SetColor(COLOR_LIGHT_WHITE, COLOR_BLACK);
+        Cursor_SetColor(FG_WHITE, BG_BLACK);
         wprintf(L"%8d", highScore);
         Cursor_Move(31, 2);
         wprintf(L"%8d", curScore);
 
         Cursor_Move(31, 4);
-        Cursor_SetColor(COLOR_LIGHT_YELLOW, COLOR_BLACK);
+        Cursor_SetColor(FG_YELLOW, BG_BLACK);
         wprintf(L"Life");
-        Cursor_SetColor(COLOR_LIGHT_WHITE, COLOR_BLACK);
+        Cursor_SetColor(FG_WHITE, BG_BLACK);
         wprintf(L"x%d", player.lifeRemaining);
 
         Cursor_Move(31, 6);
@@ -765,7 +781,7 @@ int main(void) {
         Cursor_Move(31, 10);
         wprintf(L"ESC : Quit");
 
-        const clock_t kTargetFPS = 60;
+        const clock_t kTargetFPS = 30;
         const clock_t kTargetFrameTime = CLOCKS_PER_SEC / kTargetFPS;
         const clock_t kFixedTimeStep = (clock_t)(0.02 * CLOCKS_PER_SEC); // 1 / targetFPS
 
@@ -801,7 +817,7 @@ int main(void) {
             if (remainingPoint <= 0) {
                 Flash(3, 500);
                 Cursor_Move(10, 16);
-                Cursor_SetColor(COLOR_LIGHT_WHITE, COLOR_YELLOW);
+                Cursor_SetColor(FG_WHITE, BG_DARK_YELLOW);
                 wprintf(L" Clear! ");
                 Sleep(3000);
                 previousTime = clock();
@@ -875,7 +891,7 @@ int main(void) {
                                             currentTime = clock();
                                         } else {
                                             Cursor_Move(6, 16);
-                                            Cursor_SetColor(COLOR_LIGHT_WHITE, COLOR_PURPLE);
+                                            Cursor_SetColor(FG_WHITE, BG_DARK_MAGENTA);
                                             wprintf(L"lose the game...");
                                             Sleep(3000);
                                             currentTime = clock();
@@ -922,7 +938,7 @@ int main(void) {
                                             currentTime = clock();
                                         } else {
                                             Cursor_Move(5, 16);
-                                            Cursor_SetColor(COLOR_LIGHT_WHITE, COLOR_PURPLE);
+                                            Cursor_SetColor(FG_WHITE, BG_DARK_MAGENTA);
                                             wprintf(L" lose the game... ");
                                             Sleep(3000);
                                             currentTime = clock();
@@ -945,36 +961,36 @@ int main(void) {
                 player.renderDeltaTime -= player.frameTimeStep;
             }
             Cursor_Move(player.pos.x, player.pos.y);
-            Cursor_SetColor(player.color, COLOR_BLACK);
+            Cursor_SetColor(player.color, BG_BLACK);
             wprintf(L"%lc", Player_kFrameData[player.dir][player.curFrame]);
 
             // Draw Ghost
             for (GhostType i = 0; i < 4; ++i) {
                 Ghost* ghost = &ghosts[i];
                 Cursor_Move(ghost->pos.x, ghost->pos.y);
-                Cursor_SetColor(ghost->curColor, COLOR_BLACK);
+                Cursor_SetColor(ghost->curColor, BG_BLACK);
                 wprintf(L"%lc", Ghost_kFrameData[ghost->curFrame]);
             }
 
             // Draw Score
             if (curScore != kScore) {
                 Cursor_Move(31, 2);
-                Cursor_SetColor(COLOR_LIGHT_WHITE, COLOR_BLACK);
+                Cursor_SetColor(FG_WHITE, BG_BLACK);
                 wprintf(L"%8d", curScore);
             }
 
             // Draw lifeRemaining
             if (player.lifeRemaining != kLifeRemaining) {
                 Cursor_Move(31, 4);
-                Cursor_SetColor(COLOR_LIGHT_YELLOW, COLOR_BLACK);
+                Cursor_SetColor(FG_YELLOW, BG_BLACK);
                 wprintf(L"Life");
-                Cursor_SetColor(COLOR_LIGHT_WHITE, COLOR_BLACK);
+                Cursor_SetColor(FG_WHITE, BG_BLACK);
                 wprintf(L"x%d", player.lifeRemaining);
             }
 
             // Debug
             Cursor_Move(30, 19);
-            Cursor_SetColor(COLOR_LIGHT_WHITE, COLOR_BLACK);
+            Cursor_SetColor(FG_WHITE, BG_BLACK);
             wprintf(L"(org) currentTime=%ld elapsedTime=%ld", currentTime, kElapsedTime);
             Cursor_Move(30, 20);
             wprintf(L"(sec) currentSec=%.3lf elapsedSec=%.3lf", (double)currentTime / CLOCKS_PER_SEC, (double)kElapsedTime / CLOCKS_PER_SEC);
