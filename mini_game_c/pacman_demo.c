@@ -44,7 +44,7 @@ typedef enum eColor {
 } Color;
 
 static void Cursor_Move(int x, int y) {
-    COORD pos = { x, y };
+    COORD pos = { (short)x, (short)y };
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
@@ -235,7 +235,7 @@ typedef struct _Player {
     int curFrame;
     int lifeRemaining;
     int speedPerSecond;
-    bool wasEaten;
+    bool isEaten;
 } Player;
 
 static const Position Player_kStartingPoint = { 13, 18 };
@@ -260,7 +260,7 @@ static void Player_Reset(Player* this) {
     this->curFrame = 0;
     this->renderDeltaTime = 0;
     this->frameTimeStep = this->posTimeStep / Player_kFrameCount;
-    this->wasEaten = false;
+    this->isEaten = false;
 }
 
 static bool Player_IsMovable(Position* nextPos) {
@@ -580,7 +580,7 @@ static void ResetGameState(Ghost ghosts[4], Player* player) {
 }
 
 static void Ghost_EatPacman(Ghost ghosts[4], Player* player) {
-    player->wasEaten = true;
+    player->isEaten = true;
     ResetGameState(ghosts, player);
 }
 
@@ -767,7 +767,7 @@ int main(void) {
 
         const clock_t kTargetFPS = 60;
         const clock_t kTargetFrameTime = CLOCKS_PER_SEC / kTargetFPS;
-        const clock_t kFixedTimeStep = 0.02 * CLOCKS_PER_SEC; // 1 / targetFPS
+        const clock_t kFixedTimeStep = (clock_t)(0.02 * CLOCKS_PER_SEC); // 1 / targetFPS
 
         int fixedTimeLag = 0;
         clock_t previousTime = clock();
@@ -867,7 +867,7 @@ int main(void) {
                                     Player_EatGhost(&ghosts[i], i);
                                     currentTime = clock();
                                 } else {
-                                    if (!player.wasEaten) {
+                                    if (!player.isEaten) {
                                         player.lifeRemaining--;
                                         Flash(3, 500);
                                         if (player.lifeRemaining > 0) {
@@ -914,7 +914,7 @@ int main(void) {
                                     Player_EatGhost(ghost, i);
                                     currentTime = clock();
                                 } else {
-                                    if (!player.wasEaten) {
+                                    if (!player.isEaten) {
                                         player.lifeRemaining--;
                                         Flash(3, 500);
                                         if (player.lifeRemaining > 0) {
