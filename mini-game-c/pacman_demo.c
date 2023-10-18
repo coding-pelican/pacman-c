@@ -8,21 +8,22 @@
 
 #define MAX(A, B) (((A) > (B)) ? (A) : (B))
 #define MIN(A, B) (((A) < (B)) ? (A) : (B))
-#define SWAP(A, B, TYPE) do { TYPE t = (A); (A) = (B); (B) = t; } while (0)
+#define SWAP(A, B, TYPE) \
+    do {                 \
+        TYPE t = (A);    \
+        (A) = (B);       \
+        (B) = t;         \
+    } while (0)
 
-#define SCREEN_WIDTH (80)
+#define SCREEN_WIDTH  (80)
 #define SCREEN_HEIGHT (25)
 
 static const char* g_title = "PACMAN";
-
-
 
 static inline int Wrap(int x, int low, int high) {
     const int n = (x - low) % (high - low);
     return (n >= 0) ? (n + low) : (n + high);
 }
-
-
 
 typedef enum eColor {
     FG_BLACK = 0x0000,
@@ -71,66 +72,42 @@ static void Cursor_SetVisible(bool visible) {
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
 }
 
-static void Cursor_SetColor(Color foreground, Color background) {
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), foreground | background);
-}
+static void Cursor_SetColor(Color foreground, Color background) { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), foreground | background); }
 
 
 
 
 
 static const int g_kBoardData[] = {
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,\
-    1,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,1,\
-    1,2,1,1,1,1,2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,2,1,1,1,1,2,1,\
-    1,4,1,1,1,1,2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,2,1,1,1,1,4,1,\
-    1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,\
-    1,2,1,1,1,1,2,1,1,2,1,1,1,1,1,1,1,1,2,1,1,2,1,1,1,1,2,1,\
-    1,2,2,2,2,2,2,1,1,2,2,2,2,1,1,2,2,2,2,1,1,2,2,2,2,2,2,1,\
-    1,1,1,1,1,1,2,1,1,1,1,1,0,1,1,0,1,1,1,1,1,2,1,1,1,1,1,1,\
-    0,0,0,0,0,1,2,1,1,0,0,0,0,0,0,0,0,0,0,1,1,2,1,0,0,0,0,0,\
-    0,0,0,0,0,1,2,1,1,0,1,1,1,3,3,1,1,1,0,1,1,2,1,0,0,0,0,0,\
-    1,1,1,1,1,1,2,1,1,0,1,0,0,0,0,0,0,1,0,1,1,2,1,1,1,1,1,1,\
-    0,0,0,0,0,0,2,0,0,0,1,0,0,0,0,0,0,1,0,0,0,2,0,0,0,0,0,0,\
-    1,1,1,1,1,1,2,1,1,0,1,0,0,0,0,0,0,1,0,1,1,2,1,1,1,1,1,1,\
-    0,0,0,0,0,1,2,1,1,0,1,1,1,1,1,1,1,1,0,1,1,2,1,0,0,0,0,0,\
-    0,0,0,0,0,1,2,1,1,0,0,0,0,0,0,0,0,0,0,1,1,2,1,0,0,0,0,0,\
-    1,1,1,1,1,1,2,1,1,0,1,1,1,1,1,1,1,1,0,1,1,2,1,1,1,1,1,1,\
-    1,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,1,\
-    1,2,1,1,1,1,2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,2,1,1,1,1,2,1,\
-    1,4,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,4,1,\
-    1,1,1,2,1,1,2,1,1,2,1,1,1,1,1,1,1,1,2,1,1,2,1,1,2,1,1,1,\
-    1,2,2,2,2,2,2,1,1,2,2,2,2,1,1,2,2,2,2,1,1,2,2,2,2,2,2,1,\
-    1,2,1,1,1,1,1,1,1,1,1,1,2,1,1,2,1,1,1,1,1,1,1,1,1,1,2,1,\
-    1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,\
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,\
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 4, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1,
+    1, 2, 1, 1, 1, 1, 4, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1,
+    1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1,
+    0, 1, 1, 0, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1,
+    1, 0, 1, 1, 1, 3, 3, 1, 1, 1, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1,
+    0, 0, 0, 0, 0, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 0,
+    0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 4, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 4, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2,
+    2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 // 0 = empty, 1 = wall, 2 = point, 3 = door, 4 = item
 static int g_boardData[] = {
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,\
-    1,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,1,\
-    1,2,1,1,1,1,2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,2,1,1,1,1,2,1,\
-    1,4,1,1,1,1,2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,2,1,1,1,1,4,1,\
-    1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,\
-    1,2,1,1,1,1,2,1,1,2,1,1,1,1,1,1,1,1,2,1,1,2,1,1,1,1,2,1,\
-    1,2,2,2,2,2,2,1,1,2,2,2,2,1,1,2,2,2,2,1,1,2,2,2,2,2,2,1,\
-    1,1,1,1,1,1,2,1,1,1,1,1,0,1,1,0,1,1,1,1,1,2,1,1,1,1,1,1,\
-    0,0,0,0,0,1,2,1,1,0,0,0,0,0,0,0,0,0,0,1,1,2,1,0,0,0,0,0,\
-    0,0,0,0,0,1,2,1,1,0,1,1,1,3,3,1,1,1,0,1,1,2,1,0,0,0,0,0,\
-    1,1,1,1,1,1,2,1,1,0,1,0,0,0,0,0,0,1,0,1,1,2,1,1,1,1,1,1,\
-    0,0,0,0,0,0,2,0,0,0,1,0,0,0,0,0,0,1,0,0,0,2,0,0,0,0,0,0,\
-    1,1,1,1,1,1,2,1,1,0,1,0,0,0,0,0,0,1,0,1,1,2,1,1,1,1,1,1,\
-    0,0,0,0,0,1,2,1,1,0,1,1,1,1,1,1,1,1,0,1,1,2,1,0,0,0,0,0,\
-    0,0,0,0,0,1,2,1,1,0,0,0,0,0,0,0,0,0,0,1,1,2,1,0,0,0,0,0,\
-    1,1,1,1,1,1,2,1,1,0,1,1,1,1,1,1,1,1,0,1,1,2,1,1,1,1,1,1,\
-    1,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,1,\
-    1,2,1,1,1,1,2,1,1,1,1,1,2,1,1,2,1,1,1,1,1,2,1,1,1,1,2,1,\
-    1,4,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,4,1,\
-    1,1,1,2,1,1,2,1,1,2,1,1,1,1,1,1,1,1,2,1,1,2,1,1,2,1,1,1,\
-    1,2,2,2,2,2,2,1,1,2,2,2,2,1,1,2,2,2,2,1,1,2,2,2,2,2,2,1,\
-    1,2,1,1,1,1,1,1,1,1,1,1,2,1,1,2,1,1,1,1,1,1,1,1,1,1,2,1,\
-    1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,\
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,\
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 4, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1,
+    1, 2, 1, 1, 1, 1, 4, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1,
+    1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1,
+    0, 1, 1, 0, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1,
+    1, 0, 1, 1, 1, 3, 3, 1, 1, 1, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1,
+    0, 0, 0, 0, 0, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 0,
+    0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 4, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 4, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2,
+    2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 static const int g_kBoardWidth = 28;
 static const int g_kBoardHeight = 24;
@@ -216,13 +193,7 @@ static Position* NewPos(int x, int y) {
     return newPos;
 }
 
-typedef enum eDirection {
-    DIR_NONE = -1,
-    DIR_UP,
-    DIR_LEFT,
-    DIR_RIGHT,
-    DIR_DOWN
-} Direction;
+typedef enum eDirection { DIR_NONE = -1, DIR_UP, DIR_LEFT, DIR_RIGHT, DIR_DOWN } Direction;
 
 static inline Direction GetOppositeDirectionOf(Direction dir) {
     static const Direction oppositeDirOf[5] = { DIR_NONE, DIR_DOWN, DIR_RIGHT, DIR_LEFT, DIR_UP };
@@ -296,17 +267,11 @@ static void Player_Look(Player* this, Direction dir) {
     }
 }
 
-static inline int Player_x_wrap(int x) {
-    return Wrap(x, 0, g_kBoardWidth);
-}
+static inline int Player_x_wrap(int x) { return Wrap(x, 0, g_kBoardWidth); }
 
-static inline int Player_y_wrap(int y) {
-    return Wrap(y, 0, g_kBoardHeight);
-}
+static inline int Player_y_wrap(int y) { return Wrap(y, 0, g_kBoardHeight); }
 
-static inline int Player_curFrame_wrap(int curFrame) {
-    return Wrap(curFrame, 0, Player_kFrameCount);
-}
+static inline int Player_curFrame_wrap(int curFrame) { return Wrap(curFrame, 0, Player_kFrameCount); }
 
 
 
@@ -317,13 +282,7 @@ typedef enum eGhostType {
     GHOST_CLYDE,
 } GhostType;
 
-typedef enum eGhostState {
-    GHOST_STAYING,
-    GHOST_SCATTERING,
-    GHOST_CHASING,
-    GHOST_FRIGHTENED,
-    GHOST_EATEN
-} GhostState;
+typedef enum eGhostState { GHOST_STAYING, GHOST_SCATTERING, GHOST_CHASING, GHOST_FRIGHTENED, GHOST_EATEN } GhostState;
 
 enum eGhostDuration {
     STAYING_DURATION = 1 * CLOCKS_PER_SEC,
@@ -350,7 +309,7 @@ typedef struct _Ghost {
 static const wchar_t* Ghost_kFrameData = L"Mm%%";
 static const Position Ghost_kInside = { 13, 11 };
 static const Position Ghost_kOutside = { 13, 8 };
-static const Position Ghost_kStartingPoints[4] = { { 13, 8 }, {11 , 11}, {13 , 11}, {15 , 11} };
+static const Position Ghost_kStartingPoints[4] = { { 13, 8 }, { 11, 11 }, { 13, 11 }, { 15, 11 } };
 static const Direction Ghost_kInitialDirections[4] = { DIR_LEFT, DIR_UP, DIR_DOWN, DIR_UP };
 static const int Ghost_kInitialStayingDurations[4] = { 0, 2, 8, 16 };
 static const Color Ghost_kColors[4] = { FG_RED, FG_BLUE, FG_MAGENTA, FG_DARK_YELLOW };
@@ -363,7 +322,7 @@ static void Ghost_Reset(Ghost* this, GhostType type) {
     this->dir = Ghost_kInitialDirections[type];
     this->curColor = Ghost_kColors[type];
     this->curFrame = 0;
-    for (GhostState i = 0; i < 5;++i) {
+    for (GhostState i = 0; i < 5; ++i) {
         this->isState[i] = false;
         this->stateDuration[i] = 0;
     }
@@ -376,20 +335,16 @@ static void Ghost_Reset(Ghost* this, GhostType type) {
 }
 
 static bool Ghost_IsMovable(Ghost* this, Position* nextPos) {
-    bool isMovable = !(
-        ((!this->isState[GHOST_EATEN] || this->isState[GHOST_EATEN] && this->stateDuration[GHOST_EATEN] > 4000)
-            && (g_boardData[nextPos->y * 28 + nextPos->x] == 1))
-        || ((!(this->isState[GHOST_STAYING] && !this->isInHome)
-            || !(!this->isState[GHOST_EATEN] && !this->isInHome)
-            || this->isInHome) && g_boardData[nextPos->y * 28 + nextPos->x] == 3)
-        );
+    bool isMovable =
+        !(((!this->isState[GHOST_EATEN] || this->isState[GHOST_EATEN] && this->stateDuration[GHOST_EATEN] > 4000) &&
+           (g_boardData[nextPos->y * 28 + nextPos->x] == 1)) ||
+          ((!(this->isState[GHOST_STAYING] && !this->isInHome) || !(!this->isState[GHOST_EATEN] && !this->isInHome) || this->isInHome) &&
+           g_boardData[nextPos->y * 28 + nextPos->x] == 3));
     free(nextPos);
     return isMovable;
 }
 
-static void Ghost_Look(Ghost* this, Direction dir) {
-    this->dir = dir;
-}
+static void Ghost_Look(Ghost* this, Direction dir) { this->dir = dir; }
 
 static void Ghost_Update(Ghost* this, GhostType type, Player* player, int deltaTime) {
     const int kPx = this->pos.x;
@@ -539,7 +494,7 @@ static void Ghost_Update(Ghost* this, GhostType type, Player* player, int deltaT
         }
 
         const int kDist = (kTx - kNx) * (kTx - kNx) + (kTy - kNy) * (kTy - kNy); // L2 Norm
-        //const int kDist = abs(kNx - kTx) + abs(kNy - kTy); // Manhattan dist L1 Norm
+        // const int kDist = abs(kNx - kTx) + abs(kNy - kTy); // Manhattan dist L1 Norm
 
         if (this->isState[GHOST_FRIGHTENED]) {
             if (kDist > distBestDir || bestDir == DIR_NONE) {
@@ -603,14 +558,7 @@ static void Ghost_EatPacman(Ghost ghosts[4], Player* player) {
 
 
 
-enum eKey {
-    KEY_UP = 0x48,
-    KEY_LEFT = 0x4B,
-    KEY_RIGHT = 0x4D,
-    KEY_DOWN = 0x50,
-    KEY_ESC = 0x1B,
-    KEY_ENTER = 0x0D
-};
+enum eKey { KEY_UP = 0x48, KEY_LEFT = 0x4B, KEY_RIGHT = 0x4D, KEY_DOWN = 0x50, KEY_ESC = 0x1B, KEY_ENTER = 0x0D };
 
 static int GetInputKey() {
     if (kbhit()) {
@@ -675,16 +623,22 @@ static void Screen_Finalize() {
 int main(void) {
     // Initialize Game
     const char kPressedCmpData[] = { 'w', 'a', 'd', 's', KEY_UP, KEY_LEFT, KEY_RIGHT, KEY_DOWN, 'q', KEY_ESC };
-    bool isPressed[10] = { false, };
+    bool isPressed[10] = {
+        false,
+    };
     int highScore = 0;
 
     // Initialize Player
-    Player player = { 0, };
+    Player player = {
+        0,
+    };
     Player_Reset(&player);
 
     // Initialize Ghost
-    Ghost ghosts[4] = { 0, };
-    for (GhostType i = 0; i < 4;++i) {
+    Ghost ghosts[4] = {
+        0,
+    };
+    for (GhostType i = 0; i < 4; ++i) {
         Ghost_Reset(&ghosts[i], i);
     }
 
@@ -748,7 +702,7 @@ int main(void) {
         int curScore = 0;
         Player_Reset(&player);
         player.lifeRemaining = 3;
-        for (GhostType i = 0; i < 4;++i) {
+        for (GhostType i = 0; i < 4; ++i) {
             Ghost_Reset(&ghosts[i], i);
         }
 
@@ -901,7 +855,6 @@ int main(void) {
                                 }
                             }
                         }
-
                     }
                     player.posDeltaTime -= player.posTimeStep;
                 }
