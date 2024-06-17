@@ -1,17 +1,17 @@
-#pragma region INCLUDES
-#include <assert.h> // assert 매크로를 포함
-#include <conio.h> // 키보드 입력과 화면 출력을 다루기 위한 함수들
-#include <locale.h> // 로케일 설정과 관련된 함수들
-#include <stdbool.h> // ool 자료형과 관련된 매크로를 정의
+// #region Header_Inclusions
+#include <assert.h>
+#include <conio.h>
+#include <locale.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <windows.h>
-#pragma endregion // INCLUDES
+// #endregion // Header_Inclusions
 
 
 
-#pragma region DISPLAY_DECLS
+// #region Display_Decls
 char const* const kTitle = "ASCII PACMAN";
 
 #define SCREEN_WIDTH  ((int)(80)) // 화면의 너비
@@ -103,9 +103,9 @@ void textcolor(Color fg, Color bg);
 void cls_onProgramStart();
 // 프로그램 종료시 화면을 초기화
 void cls_onProgramEnd();
-#pragma endregion // DISPLAY_DECLS
+// #endregion // Display_Decls
 
-#pragma region INPUT_DECLS
+// #region Input_Decls
 enum eKeyCode {
     eKeyCode_None       = -1,
     eKeyCode_Null       = 0,
@@ -140,9 +140,9 @@ int getInputKey();
 bool isFunctionKey();
 // 최근 입력된 키가 확장 키인지 확인
 bool isExtentionKey();
-#pragma endregion // INPUT_DECLS
+// #endregion // Input_Decls
 
-#pragma region MATH_DECLS
+// #region Math_Decls
 #define MIN(_x, _y) (((_x) < (_y)) ? (_x) : (_y))
 #define MAX(_x, _y) (((_x) > (_y)) ? (_x) : (_y))
 int clamp(int x, int low, int high);
@@ -221,13 +221,12 @@ int FourDir_dx(FourDir dir);
 int FourDir_dy(FourDir dir);
 // delta point
 Point FourDir_dp(FourDir dir);
-#pragma endregion // MATH_DECLS
+// #endregion // Math_Decls
 
-#pragma region PACMAN_BOARD
-// # 타일 유형, 문자 및 렌더링에 사용되는 색상을 포함하여 게임 보드의 레이아웃과 속성을 정의
-#define Board_kWidth  ((int)(28)) // 보드의 너비
-#define Board_kHeight ((int)(24)) // 보드의 높이
-#define Board_kSize   ((int)(Board_kWidth * Board_kHeight)) // 보드의 크기
+// #region Pacman_Board
+#define Board_kWidth  ((int)(28))
+#define Board_kHeight ((int)(24))
+#define Board_kSize   ((int)(Board_kWidth * Board_kHeight))
 
 // clang-format off
 // 게임 보드의 레퍼런스, 배열의 각 요소는 보드의 타일에 해당하며 유형에 따라 값이 할당됨.
@@ -282,10 +281,9 @@ int Board_countRemainingPoint();
 void Board_flashWall(Color color);
 // 게임 보드를 화면에 렌더링
 void Board_draw();
-#pragma endregion // PACMAN_BOARD
+// #endregion // Pacman_Board
 
-#pragma region PACMAN_PLAYER
-// # 플레이어의 속성과 동작을 정의
+// #region Pacman_Player
 typedef struct Player Player;
 struct Player {
     clock_t posTimeStep; // 위치 업데이트를 위한 시간 간격
@@ -329,12 +327,9 @@ Point Player_wrap_pos(Point pos);
 int Player_wrap_curFrame(int curFrame);
 // 유령이 플레이어를 먹었을 때
 void Player_onEatenByGhost(Player* self);
-#pragma endregion // PACMAN_PLAYER
+// #endregion // Pacman_Player
 
-#pragma region PACMAN_GHOST
-// # 유령의 속성과 동작을 정의
-
-// 유령의 종류
+// #region Pacman_Ghost
 typedef enum eGhostType {
     GhostType_BLINKY = 0,
     GhostType_INKY,
@@ -343,7 +338,6 @@ typedef enum eGhostType {
     GhostType_Count
 } GhostType;
 
-// 유령의 행동과 프레임, 색상을 결정할 상태
 typedef enum eGhostState {
     GhostState_STAYING = 0,
     GhostState_SCATTERING,
@@ -353,7 +347,6 @@ typedef enum eGhostState {
     GhostState_Count
 } GhostState;
 
-// 유령의 상태별 지속 기간
 enum eGhostDuration {
     STAYING_DURATION    = 1 * CLOCKS_PER_SEC,
     SCATTERING_DURATION = 7 * CLOCKS_PER_SEC,
@@ -397,9 +390,9 @@ void Ghost_look(Ghost* self, FourDir toDir);
 void Ghost_update(Ghost* self, GhostType type, Player* player, int deltaTime);
 // 유령이 플레이어를 먹었을 때
 void Ghost_onEatenByPlayer(Ghost* self);
-#pragma endregion // PACMAN_GHOST
+// #endregion // Pacman_Ghost
 
-#pragma region PACMAN_GAME
+// #region Pacman_Game
 typedef struct Game Game;
 struct Game {
     int    board[Board_kSize];
@@ -442,7 +435,7 @@ void Game_flash(int iterCount, int msecsPerIter);
 void Game_onPlayerEatenItem();
 void Game_onPlayerLost();
 void Game_onPlayerWon();
-#pragma endregion // PACMAN_GAME
+// #endregion // Pacman_Game
 
 
 
@@ -460,7 +453,7 @@ void Debug_log(const wchar_t* format, ...) {
 
 
 
-#pragma region MAIN_FUNCTION
+// #region Main_Function
 bool g_isRunning = true;
 int  g_state     = 0;
 
@@ -898,11 +891,11 @@ void GameState_update() {
 
     g_state = 0;
 }
-#pragma endregion // MAIN_FUNCTION
+// #endregion // Main_Function
 
 
 
-#pragma region FUNCTION_DEFS
+// #region Function_Defs
 void gotoxy(int x, int y) {
     COORD pos = { (short)x, (short)y };
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
@@ -1664,4 +1657,4 @@ void Game_onPlayerWon() {
     game.currentTime = clock();
     game.isPlaying   = false;
 }
-#pragma endregion // FUNCTION_DEFS
+// #endregion // Function_Defs

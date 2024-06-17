@@ -1,3 +1,16 @@
+/**
+ * @file pacman_drafting.c
+ * @author Gyeongtae Kim(dev-dasae) <coding-pelican@gmail.com>
+ *
+ * @brief Pacman game drafting.
+ * @details This is a drafting of pacman game.
+ *
+ * @version 0.1
+ * @date 2023-06-07
+ *
+ * @copyright Copyright 2023. Gyeongtae Kim All rights reserved.
+ */
+
 #include <conio.h>
 #include <locale.h>
 #include <stdbool.h>
@@ -11,8 +24,8 @@
 #define SWAP(A, B, TYPE) \
     do {                 \
         TYPE t = (A);    \
-        (A) = (B);       \
-        (B) = t;         \
+        (A)    = (B);    \
+        (B)    = t;      \
     } while (0)
 
 #define SCREEN_WIDTH  (80)
@@ -26,38 +39,38 @@ static inline int Wrap(int x, int low, int high) {
 }
 
 typedef enum eColor {
-    FG_BLACK = 0x0000,
-    FG_DARK_BLUE = 0x0001,
-    FG_DARK_GREEN = 0x0002,
-    FG_DARK_CYAN = 0x0003,
-    FG_DARK_RED = 0x0004,
+    FG_BLACK        = 0x0000,
+    FG_DARK_BLUE    = 0x0001,
+    FG_DARK_GREEN   = 0x0002,
+    FG_DARK_CYAN    = 0x0003,
+    FG_DARK_RED     = 0x0004,
     FG_DARK_MAGENTA = 0x0005,
-    FG_DARK_YELLOW = 0x0006,
-    FG_GRAY = 0x0007,
-    FG_DARK_GRAY = 0x0008,
-    FG_BLUE = 0x0009,
-    FG_GREEN = 0x000A,
-    FG_CYAN = 0x000B,
-    FG_RED = 0x000C,
-    FG_MAGENTA = 0x000D,
-    FG_YELLOW = 0x000E,
-    FG_WHITE = 0x000F,
-    BG_BLACK = 0x0000,
-    BG_DARK_BLUE = 0x0010,
-    BG_DARK_GREEN = 0x0020,
-    BG_DARK_CYAN = 0x0030,
-    BG_DARK_RED = 0x0040,
+    FG_DARK_YELLOW  = 0x0006,
+    FG_GRAY         = 0x0007,
+    FG_DARK_GRAY    = 0x0008,
+    FG_BLUE         = 0x0009,
+    FG_GREEN        = 0x000A,
+    FG_CYAN         = 0x000B,
+    FG_RED          = 0x000C,
+    FG_MAGENTA      = 0x000D,
+    FG_YELLOW       = 0x000E,
+    FG_WHITE        = 0x000F,
+    BG_BLACK        = 0x0000,
+    BG_DARK_BLUE    = 0x0010,
+    BG_DARK_GREEN   = 0x0020,
+    BG_DARK_CYAN    = 0x0030,
+    BG_DARK_RED     = 0x0040,
     BG_DARK_MAGENTA = 0x0050,
-    BG_DARK_YELLOW = 0x0060,
-    BG_GRAY = 0x0070,
-    BG_DARK_GRAY = 0x0080,
-    BG_BLUE = 0x0090,
-    BG_GREEN = 0x00A0,
-    BG_CYAN = 0x00B0,
-    BG_RED = 0x00C0,
-    BG_MAGENTA = 0x00D0,
-    BG_YELLOW = 0x00E0,
-    BG_WHITE = 0x00F0,
+    BG_DARK_YELLOW  = 0x0060,
+    BG_GRAY         = 0x0070,
+    BG_DARK_GRAY    = 0x0080,
+    BG_BLUE         = 0x0090,
+    BG_GREEN        = 0x00A0,
+    BG_CYAN         = 0x00B0,
+    BG_RED          = 0x00C0,
+    BG_MAGENTA      = 0x00D0,
+    BG_YELLOW       = 0x00E0,
+    BG_WHITE        = 0x00F0,
 } Color;
 
 static void Cursor_Move(int x, int y) {
@@ -137,18 +150,18 @@ static int g_boardData[] = {
 };
 // clang-format on
 
-static const int g_kBoardWidth = 28;
-static const int g_kBoardHeight = 24;
-static const wchar_t* g_tileCharData = L" #.-*";
-static const Color g_tileFgColorDate[] = { FG_BLACK, FG_DARK_BLUE, FG_DARK_YELLOW, FG_GRAY, FG_RED };
-static const Color g_tileBgColorDate[] = { BG_BLACK, BG_DARK_BLUE, BG_BLACK, BG_BLACK, BG_BLACK };
+static const int      g_kBoardWidth       = 28;
+static const int      g_kBoardHeight      = 24;
+static const wchar_t* g_tileCharData      = L" #.-*";
+static const Color    g_tileFgColorDate[] = { FG_BLACK, FG_DARK_BLUE, FG_DARK_YELLOW, FG_GRAY, FG_RED };
+static const Color    g_tileBgColorDate[] = { BG_BLACK, BG_DARK_BLUE, BG_BLACK, BG_BLACK, BG_BLACK };
 
 static void ResetBoard() {
     int index = 0;
     for (int y = 0; y < g_kBoardHeight; ++y) {
         for (int x = 0; x < g_kBoardWidth; ++x) {
             const int kCurIndexData = g_kBoardData[index];
-            g_boardData[index++] = kCurIndexData;
+            g_boardData[index++]    = kCurIndexData;
         }
     }
 }
@@ -216,8 +229,8 @@ typedef struct _Position {
 
 static Position* NewPos(int x, int y) {
     Position* newPos = (Position*)malloc(sizeof(Position));
-    newPos->x = x;
-    newPos->y = y;
+    newPos->x        = x;
+    newPos->y        = y;
     return newPos;
 }
 
@@ -243,25 +256,25 @@ static inline int GetDy(Direction dir) {
 }
 
 typedef struct _Player {
-    clock_t posTimeStep;
-    clock_t frameTimeStep; // 6 frames per 0.125s
-    int posDeltaTime;
-    int renderDeltaTime;
-    Position pos;
+    clock_t   posTimeStep;
+    clock_t   frameTimeStep; // 6 frames per 0.125s
+    int       posDeltaTime;
+    int       renderDeltaTime;
+    Position  pos;
     Direction dir;
     Direction nextDir;
-    Color color;
-    int curFrame;
-    int lifeRemaining;
-    int speedPerSecond;
-    bool isEaten;
+    Color     color;
+    int       curFrame;
+    int       lifeRemaining;
+    int       speedPerSecond;
+    bool      isEaten;
 } Player;
 
-static const Position Player_kStartingPoint = { 13, 18 };
+static const Position  Player_kStartingPoint    = { 13, 18 };
 static const Direction Player_kInitialDirection = DIR_LEFT;
-static const int Player_kFrameCount = 6;
-static const wchar_t* Player_kFrameIdle = L"O";
-static const wchar_t* Player_kFrameData[4] = {
+static const int       Player_kFrameCount       = 6;
+static const wchar_t*  Player_kFrameIdle        = L"O";
+static const wchar_t*  Player_kFrameData[4]     = {
     L"VV|||V", // UP
     L"})>->)", // LEFT
     L"{(<-<(", // RIGHT
@@ -269,17 +282,17 @@ static const wchar_t* Player_kFrameData[4] = {
 };
 
 static void Player_Reset(Player* this) {
-    this->pos = Player_kStartingPoint;
-    this->dir = Player_kInitialDirection;
-    this->nextDir = DIR_NONE;
-    this->color = FG_YELLOW;
-    this->speedPerSecond = 5;
-    this->posDeltaTime = 0;
-    this->posTimeStep = CLOCKS_PER_SEC / this->speedPerSecond;
-    this->curFrame = 0;
+    this->pos             = Player_kStartingPoint;
+    this->dir             = Player_kInitialDirection;
+    this->nextDir         = DIR_NONE;
+    this->color           = FG_YELLOW;
+    this->speedPerSecond  = 5;
+    this->posDeltaTime    = 0;
+    this->posTimeStep     = CLOCKS_PER_SEC / this->speedPerSecond;
+    this->curFrame        = 0;
     this->renderDeltaTime = 0;
-    this->frameTimeStep = this->posTimeStep / Player_kFrameCount;
-    this->isEaten = false;
+    this->frameTimeStep   = this->posTimeStep / Player_kFrameCount;
+    this->isEaten         = false;
 }
 
 static bool Player_IsMovable(Position* nextPos) {
@@ -292,7 +305,7 @@ static void Player_Look(Player* this, Direction dir) {
     const int kNextX = this->pos.x + GetDx(dir);
     const int kNextY = this->pos.y + GetDy(dir);
     if (Player_IsMovable(NewPos(kNextX, kNextY))) {
-        this->dir = dir;
+        this->dir     = dir;
         this->nextDir = DIR_NONE;
     } else {
         this->nextDir = dir;
@@ -321,53 +334,53 @@ typedef enum eGhostState { GHOST_STAYING,
                            GHOST_EATEN } GhostState;
 
 enum eGhostDuration {
-    STAYING_DURATION = 1 * CLOCKS_PER_SEC,
+    STAYING_DURATION    = 1 * CLOCKS_PER_SEC,
     SCATTERING_DURATION = 7 * CLOCKS_PER_SEC,
-    CHASING_DURATION = 20 * CLOCKS_PER_SEC,
+    CHASING_DURATION    = 20 * CLOCKS_PER_SEC,
     FRIGHTENED_DURATION = 8 * CLOCKS_PER_SEC,
-    EATEN_DURATION = 8 * CLOCKS_PER_SEC
+    EATEN_DURATION      = 8 * CLOCKS_PER_SEC
 };
 
 typedef struct _Ghost {
-    bool isState[5];
-    bool isInHome;
-    int stateDuration[5];
-    clock_t posTimeStep;
-    int posDeltaTime;
-    Position pos;
-    Position targetPos;
+    bool      isState[5];
+    bool      isInHome;
+    int       stateDuration[5];
+    clock_t   posTimeStep;
+    int       posDeltaTime;
+    Position  pos;
+    Position  targetPos;
     Direction dir;
-    Color curColor;
-    int curFrame;
-    int speedPerSecond;
+    Color     curColor;
+    int       curFrame;
+    int       speedPerSecond;
 } Ghost;
 
-static const wchar_t* Ghost_kFrameData = L"Mm%%";
-static const Position Ghost_kInside = { 13, 11 };
-static const Position Ghost_kOutside = { 13, 8 };
-static const Position Ghost_kStartingPoints[4] = { { 13, 8 }, { 11, 11 }, { 13, 11 }, { 15, 11 } };
-static const Direction Ghost_kInitialDirections[4] = { DIR_LEFT, DIR_UP, DIR_DOWN, DIR_UP };
-static const int Ghost_kInitialStayingDurations[4] = { 0, 2, 8, 16 };
-static const Color Ghost_kColors[4] = { FG_RED, FG_BLUE, FG_MAGENTA, FG_DARK_YELLOW };
-static const Color Ghost_kVulnerableColor = FG_DARK_BLUE;
-static const Color Ghost_kEatenColor = FG_GRAY;
+static const wchar_t*  Ghost_kFrameData                  = L"Mm%%";
+static const Position  Ghost_kInside                     = { 13, 11 };
+static const Position  Ghost_kOutside                    = { 13, 8 };
+static const Position  Ghost_kStartingPoints[4]          = { { 13, 8 }, { 11, 11 }, { 13, 11 }, { 15, 11 } };
+static const Direction Ghost_kInitialDirections[4]       = { DIR_LEFT, DIR_UP, DIR_DOWN, DIR_UP };
+static const int       Ghost_kInitialStayingDurations[4] = { 0, 2, 8, 16 };
+static const Color     Ghost_kColors[4]                  = { FG_RED, FG_BLUE, FG_MAGENTA, FG_DARK_YELLOW };
+static const Color     Ghost_kVulnerableColor            = FG_DARK_BLUE;
+static const Color     Ghost_kEatenColor                 = FG_GRAY;
 
 static void Ghost_Reset(Ghost* this, GhostType type) {
-    this->pos = Ghost_kStartingPoints[type];
+    this->pos       = Ghost_kStartingPoints[type];
     this->targetPos = type == GHOST_BLINKY ? Ghost_kOutside : Ghost_kInside;
-    this->dir = Ghost_kInitialDirections[type];
-    this->curColor = Ghost_kColors[type];
-    this->curFrame = 0;
+    this->dir       = Ghost_kInitialDirections[type];
+    this->curColor  = Ghost_kColors[type];
+    this->curFrame  = 0;
     for (GhostState i = 0; i < 5; ++i) {
-        this->isState[i] = false;
+        this->isState[i]       = false;
         this->stateDuration[i] = 0;
     }
-    this->isState[GHOST_STAYING] = true;
+    this->isState[GHOST_STAYING]       = true;
     this->stateDuration[GHOST_STAYING] = Ghost_kInitialStayingDurations[type] * STAYING_DURATION;
-    this->isInHome = true;
-    this->speedPerSecond = 4;
-    this->posDeltaTime = 0;
-    this->posTimeStep = CLOCKS_PER_SEC / this->speedPerSecond;
+    this->isInHome                     = true;
+    this->speedPerSecond               = 4;
+    this->posDeltaTime                 = 0;
+    this->posTimeStep                  = CLOCKS_PER_SEC / this->speedPerSecond;
 }
 
 static bool Ghost_IsMovable(Ghost* this, Position* nextPos) {
@@ -380,9 +393,9 @@ static bool Ghost_IsMovable(Ghost* this, Position* nextPos) {
 static void Ghost_Look(Ghost* this, Direction dir) { this->dir = dir; }
 
 static void Ghost_Update(Ghost* this, GhostType type, Player* player, int deltaTime) {
-    const int kPx = this->pos.x;
-    const int kPy = this->pos.y;
-    const Direction kDir = this->dir;
+    const int       kPx           = this->pos.x;
+    const int       kPy           = this->pos.y;
+    const Direction kDir          = this->dir;
     const Direction kBackwardsDir = GetOppositeDirectionOf(kDir);
 
     for (GhostState index = 0; index < 5; ++index) {
@@ -395,18 +408,18 @@ static void Ghost_Update(Ghost* this, GhostType type, Player* player, int deltaT
         const int kTx = this->targetPos.x;
         const int kTy = this->targetPos.y;
         if (kPx == kTx && kPy == kTy || this->stateDuration[GHOST_EATEN] <= 0) {
-            this->pos = Ghost_kStartingPoints[type == GHOST_BLINKY ? GHOST_PINKY : type];
-            this->isState[GHOST_EATEN] = false;
-            this->stateDuration[GHOST_EATEN] = 0;
-            this->isState[GHOST_STAYING] = true;
+            this->pos                          = Ghost_kStartingPoints[type == GHOST_BLINKY ? GHOST_PINKY : type];
+            this->isState[GHOST_EATEN]         = false;
+            this->stateDuration[GHOST_EATEN]   = 0;
+            this->isState[GHOST_STAYING]       = true;
             this->stateDuration[GHOST_STAYING] = STAYING_DURATION * 8;
-            this->isInHome = true;
-            this->targetPos = Ghost_kInside;
-            this->curColor = Ghost_kColors[type];
-            this->curFrame = 0;
+            this->isInHome                     = true;
+            this->targetPos                    = Ghost_kInside;
+            this->curColor                     = Ghost_kColors[type];
+            this->curFrame                     = 0;
             this->posDeltaTime /= 4;
             this->speedPerSecond = 4;
-            this->posTimeStep = CLOCKS_PER_SEC / this->speedPerSecond;
+            this->posTimeStep    = CLOCKS_PER_SEC / this->speedPerSecond;
 
             int* tileAtGhostPos = &g_boardData[kPy * 28 + kPx];
             Cursor_Move(kPx, kPy);
@@ -418,15 +431,15 @@ static void Ghost_Update(Ghost* this, GhostType type, Player* player, int deltaT
 
     if (this->isState[GHOST_FRIGHTENED]) {
         if (this->stateDuration[GHOST_FRIGHTENED] <= 0) {
-            this->isState[GHOST_FRIGHTENED] = false;
+            this->isState[GHOST_FRIGHTENED]       = false;
             this->stateDuration[GHOST_FRIGHTENED] = 0;
-            this->isState[GHOST_SCATTERING] = true;
+            this->isState[GHOST_SCATTERING]       = true;
             this->stateDuration[GHOST_SCATTERING] = SCATTERING_DURATION;
-            this->curColor = Ghost_kColors[type];
-            this->curFrame = 0;
+            this->curColor                        = Ghost_kColors[type];
+            this->curFrame                        = 0;
             this->posDeltaTime /= 2;
             this->speedPerSecond = 4;
-            this->posTimeStep = CLOCKS_PER_SEC / this->speedPerSecond;
+            this->posTimeStep    = CLOCKS_PER_SEC / this->speedPerSecond;
             return;
         }
     }
@@ -453,7 +466,7 @@ static void Ghost_Update(Ghost* this, GhostType type, Player* player, int deltaT
                 Ghost_Look(this, this->targetPos.x - kPx > 0 ? DIR_RIGHT : DIR_LEFT);
                 return;
             }
-            this->isInHome = false;
+            this->isInHome  = false;
             this->targetPos = Ghost_kOutside;
             Ghost_Look(this, DIR_UP);
             return;
@@ -461,9 +474,9 @@ static void Ghost_Update(Ghost* this, GhostType type, Player* player, int deltaT
         if (kPy != this->targetPos.y) {
             return;
         }
-        this->isState[GHOST_STAYING] = false;
-        this->stateDuration[GHOST_STAYING] = 0;
-        this->isState[GHOST_SCATTERING] = true;
+        this->isState[GHOST_STAYING]          = false;
+        this->stateDuration[GHOST_STAYING]    = 0;
+        this->isState[GHOST_SCATTERING]       = true;
         this->stateDuration[GHOST_SCATTERING] = SCATTERING_DURATION;
         Ghost_Look(this, rand() & 1 ? DIR_LEFT : DIR_RIGHT);
         return;
@@ -471,15 +484,15 @@ static void Ghost_Update(Ghost* this, GhostType type, Player* player, int deltaT
 
     if (!this->isState[GHOST_FRIGHTENED] && this->isState[GHOST_SCATTERING]) {
         if (this->stateDuration[GHOST_SCATTERING] <= 0) {
-            this->isState[GHOST_SCATTERING] = false;
+            this->isState[GHOST_SCATTERING]       = false;
             this->stateDuration[GHOST_SCATTERING] = 0;
-            this->isState[GHOST_CHASING] = true;
-            this->stateDuration[GHOST_CHASING] = CHASING_DURATION;
+            this->isState[GHOST_CHASING]          = true;
+            this->stateDuration[GHOST_CHASING]    = CHASING_DURATION;
             return;
         }
 
         Direction movableDirs[3];
-        int movableDirCount = 0;
+        int       movableDirCount = 0;
 
         for (Direction dir = 0; dir < 4; ++dir) {
             if (dir == kBackwardsDir) {
@@ -498,9 +511,9 @@ static void Ghost_Update(Ghost* this, GhostType type, Player* player, int deltaT
 
     if (!this->isState[GHOST_FRIGHTENED] && this->isState[GHOST_CHASING]) {
         if (this->stateDuration[GHOST_CHASING] <= 0) {
-            this->isState[GHOST_CHASING] = false;
-            this->stateDuration[GHOST_CHASING] = 0;
-            this->isState[GHOST_SCATTERING] = true;
+            this->isState[GHOST_CHASING]          = false;
+            this->stateDuration[GHOST_CHASING]    = 0;
+            this->isState[GHOST_SCATTERING]       = true;
             this->stateDuration[GHOST_SCATTERING] = SCATTERING_DURATION;
             return;
         }
@@ -511,7 +524,7 @@ static void Ghost_Update(Ghost* this, GhostType type, Player* player, int deltaT
     const int kTx = this->targetPos.x;
     const int kTy = this->targetPos.y;
 
-    int bestDir = DIR_NONE;
+    int bestDir     = DIR_NONE;
     int distBestDir = this->isState[GHOST_FRIGHTENED] ? -1 : 987654321;
 
     for (Direction dir = 0; dir < 4; ++dir) {
@@ -531,12 +544,12 @@ static void Ghost_Update(Ghost* this, GhostType type, Player* player, int deltaT
 
         if (this->isState[GHOST_FRIGHTENED]) {
             if (kDist > distBestDir || bestDir == DIR_NONE) {
-                bestDir = dir;
+                bestDir     = dir;
                 distBestDir = kDist;
             }
         } else {
             if (kDist < distBestDir || bestDir == DIR_NONE) {
-                bestDir = dir;
+                bestDir     = dir;
                 distBestDir = kDist;
             }
         }
@@ -550,11 +563,11 @@ static void Player_EatPowerItem(Ghost ghosts[4]) {
         if (ghosts[i].isState[GHOST_EATEN]) {
             continue;
         }
-        ghosts[i].isState[GHOST_FRIGHTENED] = true;
+        ghosts[i].isState[GHOST_FRIGHTENED]       = true;
         ghosts[i].stateDuration[GHOST_FRIGHTENED] = FRIGHTENED_DURATION;
-        ghosts[i].curColor = Ghost_kVulnerableColor;
-        ghosts[i].curFrame = 1;
-        ghosts[i].speedPerSecond = 2;
+        ghosts[i].curColor                        = Ghost_kVulnerableColor;
+        ghosts[i].curFrame                        = 1;
+        ghosts[i].speedPerSecond                  = 2;
         ghosts[i].posDeltaTime *= 2;
         ghosts[i].posTimeStep = CLOCKS_PER_SEC / ghosts[i].speedPerSecond;
     }
@@ -562,17 +575,17 @@ static void Player_EatPowerItem(Ghost ghosts[4]) {
 
 static void Player_EatGhost(Ghost* ghost, GhostType type) {
     for (int i = 0; i < 4; ++i) {
-        ghost->isState[i] = false;
+        ghost->isState[i]       = false;
         ghost->stateDuration[i] = 0;
     }
-    ghost->isState[GHOST_EATEN] = true;
+    ghost->isState[GHOST_EATEN]       = true;
     ghost->stateDuration[GHOST_EATEN] = EATEN_DURATION;
-    ghost->curColor = Ghost_kEatenColor;
-    ghost->curFrame = 2;
-    ghost->speedPerSecond = 10;
+    ghost->curColor                   = Ghost_kEatenColor;
+    ghost->curFrame                   = 2;
+    ghost->speedPerSecond             = 10;
     ghost->posDeltaTime /= 4;
     ghost->posTimeStep = CLOCKS_PER_SEC / ghost->speedPerSecond;
-    ghost->targetPos = Ghost_kOutside;
+    ghost->targetPos   = Ghost_kOutside;
 }
 
 static void ResetGameState(Ghost ghosts[4], Player* player) {
@@ -591,16 +604,16 @@ static void Ghost_EatPacman(Ghost ghosts[4], Player* player) {
 
 
 
-enum eKey { KEY_UP = 0x48,
-            KEY_LEFT = 0x4B,
+enum eKey { KEY_UP    = 0x48,
+            KEY_LEFT  = 0x4B,
             KEY_RIGHT = 0x4D,
-            KEY_DOWN = 0x50,
-            KEY_ESC = 0x1B,
+            KEY_DOWN  = 0x50,
+            KEY_ESC   = 0x1B,
             KEY_ENTER = 0x0D };
 
 static int GetInputKey() {
     if (kbhit()) {
-        int input = getch();
+        int        input         = getch();
         const bool isFunctionKey = input == 0x00;
         const bool isExtendedKey = input == 0xE0;
         if (isFunctionKey || isExtendedKey) {
@@ -661,7 +674,7 @@ static void Screen_Finalize() {
 int main(void) {
     // Initialize Game
     const char kPressedCmpData[] = { 'w', 'a', 'd', 's', KEY_UP, KEY_LEFT, KEY_RIGHT, KEY_DOWN, 'q', KEY_ESC };
-    bool isPressed[10] = {
+    bool       isPressed[10]     = {
         false,
     };
     int highScore = 0;
@@ -687,8 +700,8 @@ int main(void) {
     do {
         system("cls");
         int curMenuPointer = 0;
-        int input = 0;
-        selection = -1;
+        int input          = 0;
+        selection          = -1;
 
         Cursor_Move(0, 0);
         Cursor_SetColor(FG_WHITE, BG_BLACK);
@@ -734,10 +747,10 @@ int main(void) {
 
 
         // Game Scene
-        bool isPlaying = true;
-        bool started = false;
-        int remainingPoint = GetRemainingPoint();
-        int curScore = 0;
+        bool isPlaying      = true;
+        bool started        = false;
+        int  remainingPoint = GetRemainingPoint();
+        int  curScore       = 0;
         Player_Reset(&player);
         player.lifeRemaining = 3;
         for (GhostType i = 0; i < 4; ++i) {
@@ -773,11 +786,11 @@ int main(void) {
         Cursor_Move(31, 10);
         wprintf(L"ESC : Quit");
 
-        const clock_t kTargetFPS = 30;
+        const clock_t kTargetFPS       = 30;
         const clock_t kTargetFrameTime = CLOCKS_PER_SEC / kTargetFPS;
-        const clock_t kFixedTimeStep = (clock_t)(0.02 * CLOCKS_PER_SEC); // 1 / targetFPS
+        const clock_t kFixedTimeStep   = (clock_t)(0.02 * CLOCKS_PER_SEC); // 1 / targetFPS
 
-        int fixedTimeLag = 0;
+        int     fixedTimeLag = 0;
         clock_t previousTime = clock();
 
         while (isPlaying) {
@@ -804,7 +817,7 @@ int main(void) {
             }
 
             // Update Game
-            const int kScore = curScore;
+            const int kScore         = curScore;
             const int kLifeRemaining = player.lifeRemaining;
             if (remainingPoint <= 0) {
                 Flash(3, 500);
@@ -813,7 +826,7 @@ int main(void) {
                 wprintf(L" Clear! ");
                 Sleep(3000);
                 previousTime = clock();
-                isPlaying = false;
+                isPlaying    = false;
             }
 
             // Update Player
@@ -822,7 +835,7 @@ int main(void) {
             }
 
             // Fixed Update
-            clock_t currentTime = clock();
+            clock_t       currentTime  = clock();
             const clock_t kElapsedTime = currentTime - previousTime;
             fixedTimeLag += kElapsedTime;
 
@@ -837,11 +850,11 @@ int main(void) {
             while (fixedTimeLag >= kFixedTimeStep) {
                 // Player
                 if (player.posDeltaTime >= player.posTimeStep) {
-                    const int kPrevX = player.pos.x;
-                    const int kPrevY = player.pos.y;
-                    const int kNextX = Player_x_wrap(kPrevX + GetDx(player.dir));
-                    const int kNextY = Player_y_wrap(kPrevY + GetDy(player.dir));
-                    int* tileAtPlayerPos = &g_boardData[kPrevY * 28 + kPrevX];
+                    const int kPrevX          = player.pos.x;
+                    const int kPrevY          = player.pos.y;
+                    const int kNextX          = Player_x_wrap(kPrevX + GetDx(player.dir));
+                    const int kNextY          = Player_y_wrap(kPrevY + GetDy(player.dir));
+                    int*      tileAtPlayerPos = &g_boardData[kPrevY * 28 + kPrevX];
 
                     // Add Score
                     if (*tileAtPlayerPos == 2) {
@@ -887,7 +900,7 @@ int main(void) {
                                             wprintf(L"lose the game...");
                                             Sleep(3000);
                                             currentTime = clock();
-                                            isPlaying = false;
+                                            isPlaying   = false;
                                         }
                                     }
                                 }
@@ -901,11 +914,11 @@ int main(void) {
                 for (GhostType i = 0; i < 4; ++i) {
                     Ghost* ghost = &ghosts[i];
                     if (ghost->posDeltaTime >= ghost->posTimeStep) {
-                        const int kPrevX = ghost->pos.x;
-                        const int kPrevY = ghost->pos.y;
-                        const int kNextX = kPrevX + GetDx(ghost->dir);
-                        const int kNextY = kPrevY + GetDy(ghost->dir);
-                        int* tileAtGhostPos = &g_boardData[kPrevY * 28 + kPrevX];
+                        const int kPrevX         = ghost->pos.x;
+                        const int kPrevY         = ghost->pos.y;
+                        const int kNextX         = kPrevX + GetDx(ghost->dir);
+                        const int kNextY         = kPrevY + GetDy(ghost->dir);
+                        int*      tileAtGhostPos = &g_boardData[kPrevY * 28 + kPrevX];
                         if (Ghost_IsMovable(ghost, NewPos(kNextX, kNextY))) {
                             ghost->pos.x = kNextX;
                             ghost->pos.y = kNextY;
@@ -933,7 +946,7 @@ int main(void) {
                                             wprintf(L" lose the game... ");
                                             Sleep(3000);
                                             currentTime = clock();
-                                            isPlaying = false;
+                                            isPlaying   = false;
                                         }
                                     }
                                 }
