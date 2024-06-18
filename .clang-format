@@ -1,0 +1,60 @@
+﻿## clang-format configurator v2 https://clang-format-configurator.site/
+## see https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+---
+BasedOnStyle: LLVM
+Standard: c++20
+
+ColumnLimit: 0
+# ColumnLimit: 120
+MaxEmptyLinesToKeep: 5
+
+## Indentation settings
+TabWidth: 4
+IndentWidth: 4
+AccessModifierOffset: -4
+IndentPPDirectives: AfterHash
+PPIndentWidth: 2
+ObjCBlockIndentWidth: 4
+
+## Alignment and breaking options
+# AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: BlockIndent
+AlignOperands: AlignAfterOperator
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignTrailingComments: false
+AlignConsecutiveMacros:
+  Enabled: true
+AlignEscapedNewlines: Left
+
+AllowShortBlocksOnASingleLine: Always
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: Always
+AllowShortLoopsOnASingleLine: true
+
+## Allow all elements on separate lines
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+
+## Disable bin packing to ensure each parameter is on a new line
+BinPackArguments: false
+BinPackParameters: false
+
+## Break before braces and other style options
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: false
+  SplitEmptyFunction: false
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+Cpp11BracedListStyle: false
+
+## Insert braces and new lines
+InsertBraces: true
+InsertNewlineAtEOF: true
+PointerAlignment: Left
+
+## Specific settings for function calls and declarations
+BreakAfterJavaFieldAnnotations: false
+ExperimentalAutoDetectBinPacking: false
