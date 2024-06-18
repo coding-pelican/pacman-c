@@ -8,8 +8,9 @@
  * @version 0.1
  * @date 2023-06-07
  *
- * @copyright Copyright 2023. Gyeongtae Kim All rights reserved.
+ * @copyright Released under the MIT License. See LICENSE file for details.
  */
+
 
 #include <conio.h>
 #include <locale.h>

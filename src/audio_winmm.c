@@ -8,7 +8,7 @@
  * @version 0.1
  * @date 2024-06-12
  *
- * @copyright Copyright 2024. Gyeongtae Kim All rights reserved.
+ * @copyright Released under the MIT License. See LICENSE file for details.
  */
 
 

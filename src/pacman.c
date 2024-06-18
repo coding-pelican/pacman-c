@@ -1,3 +1,17 @@
+/**
+ * @file pacman.c
+ * @author Gyeongtae Kim(dev-dasae) <codingpelican@gmail.com>
+ *
+ * @brief Pacman game implementation.
+ * @details This is a implementation of pacman game.
+ *
+ * @version 0.1
+ * @date 2024-06-10
+ *
+ * @copyright Released under the MIT License. See LICENSE file for details.
+ */
+
+
 // #region Header_Inclusions
 #include <assert.h>
 #include <conio.h>
@@ -9,13 +23,11 @@
 #include <windows.h>
 // #endregion // Header_Inclusions
 
-
-
 // #region Display_Decls
-char const* const kTitle = "ASCII PACMAN";
+char const* const Window_kTitle = "ASCII PACMAN";
 
-#define SCREEN_WIDTH  ((int)(80)) // 화면의 너비
-#define SCREEN_HEIGHT ((int)(25)) // 화면의 높이
+#define Screen_kWidth  ((int)(80))
+#define Screen_kHeight ((int)(25))
 
 /*
 80x25
@@ -93,16 +105,11 @@ typedef enum eColor {
     Color_LIGHT_WHITE
 } Color;
 
-// 커서를 x, y 좌표로 이동
-void gotoxy(int x, int y);
-// 커서를 보이거나 숨김
-void setcursor(bool visible);
-// 텍스트의 색상을 설정: fg는 전경색, bg는 배경색
-void textcolor(Color fg, Color bg);
-// 프로그램 시작시 화면을 초기화
-void cls_onProgramStart();
-// 프로그램 종료시 화면을 초기화
-void cls_onProgramEnd();
+void Cursor_moveXY(int x, int y);
+void Cursor_setVisible(bool visible);
+void Cursor_setColor(Color fg, Color bg);
+void Screen_clear_onProgramStart();
+void Screen_clear_onProgramEnd();
 // #endregion // Display_Decls
 
 // #region Input_Decls
@@ -438,7 +445,6 @@ void Game_onPlayerWon();
 // #endregion // Pacman_Game
 
 
-
 void Debug_log(const wchar_t* format, ...) {
     FILE* logFile = _wfopen(L"debug.log", L"a");
     if (logFile) {
@@ -450,7 +456,6 @@ void Debug_log(const wchar_t* format, ...) {
         (void)fclose(logFile);
     }
 }
-
 
 
 // #region Main_Function
@@ -530,7 +535,7 @@ void MenuState_update();
 void GameState_update();
 
 int main() {
-    cls_onProgramStart();
+    Screen_clear_onProgramStart();
 
     Game_init();
     while (g_isRunning) {
@@ -548,19 +553,19 @@ int main() {
         }
     }
 
-    cls_onProgramEnd();
+    Screen_clear_onProgramEnd();
     return 0;
 }
 
 void Button_onFocusing(Button* self) {
-    textcolor(self->focusedForeground, self->focusedBackground);
-    gotoxy(self->posMin.x - 1, self->posMin.y);
+    Cursor_setColor(self->focusedForeground, self->focusedBackground);
+    Cursor_moveXY(self->posMin.x - 1, self->posMin.y);
     wprintf(L"[");
     for (int typo = 0; typo < self->width; ++typo) {
         wprintf(L"%lc", self->text[typo]);
     }
     wprintf(L"]");
-    gotoxy(self->posMin.x, self->posMin.y + 1);
+    Cursor_moveXY(self->posMin.x, self->posMin.y + 1);
     for (int i = 0; i < self->width; ++i) {
         wprintf(L"^");
     }
@@ -568,14 +573,14 @@ void Button_onFocusing(Button* self) {
 }
 
 void Button_onFocused(Button* self) {
-    textcolor(self->enabledForeground, self->enabledBackground);
-    gotoxy(self->posMin.x - 1, self->posMin.y);
+    Cursor_setColor(self->enabledForeground, self->enabledBackground);
+    Cursor_moveXY(self->posMin.x - 1, self->posMin.y);
     wprintf(L"[");
     for (int typo = 0; typo < self->width; ++typo) {
         wprintf(L"%lc", self->text[typo]);
     }
     wprintf(L"]");
-    gotoxy(self->posMin.x, self->posMin.y + 1);
+    Cursor_moveXY(self->posMin.x, self->posMin.y + 1);
     for (int i = 0; i < self->width; ++i) {
         wprintf(L" ");
     }
@@ -583,22 +588,22 @@ void Button_onFocused(Button* self) {
 }
 
 void Button_onClicked(Button* self) {
-    textcolor(self->clickedForeground, self->clickedBackground);
-    gotoxy(self->posMin.x, self->posMin.y);
+    Cursor_setColor(self->clickedForeground, self->clickedBackground);
+    Cursor_moveXY(self->posMin.x, self->posMin.y);
     for (int typo = 0; typo < self->width; ++typo) {
         wprintf(L"%lc", self->text[typo]);
     }
-    textcolor(Game_kDefaultForeground, Game_kDefaultBackground);
+    Cursor_setColor(Game_kDefaultForeground, Game_kDefaultBackground);
     self->isClicked = true;
 }
 
 void Button_draw(Button* self) {
     if (self->isEnabled) {
-        textcolor(self->enabledForeground, self->enabledBackground);
+        Cursor_setColor(self->enabledForeground, self->enabledBackground);
     } else {
-        textcolor(self->disabledForeground, self->disabledBackground);
+        Cursor_setColor(self->disabledForeground, self->disabledBackground);
     }
-    gotoxy(self->posMin.x - 1, self->posMin.y);
+    Cursor_moveXY(self->posMin.x - 1, self->posMin.y);
     wprintf(L"[");
     for (int i = 0; self->text[i] != L'\0'; ++i) {
         wprintf(L"%lc", self->text[i]);
@@ -638,9 +643,9 @@ void Menu_QuitButton_onClicked(Button* self) {
 
 // 게임 시작 또는 종료를 선택할 수 있는 메뉴 화면. 메뉴 옵션이 표시되고 플레이어의 입력을 처리하여 옵션을 선택.
 void MenuState_update() {
-    textcolor(Color_LIGHT_WHITE, Color_BLACK);
+    Cursor_setColor(Color_LIGHT_WHITE, Color_BLACK);
     int index = 0;
-    for (int y = 0; y < SCREEN_HEIGHT; ++y) {
+    for (int y = 0; y < Screen_kHeight; ++y) {
         Color fg = Game_kDefaultForeground;
         if (1 <= y && y < 7) {
             fg = Color_LIGHT_RED;
@@ -649,8 +654,8 @@ void MenuState_update() {
         } else {
             fg = Game_kDefaultForeground;
         }
-        textcolor(fg, Game_kDefaultBackground);
-        for (int x = 0; x < SCREEN_WIDTH + 1; ++x) {
+        Cursor_setColor(fg, Game_kDefaultBackground);
+        for (int x = 0; x < Screen_kWidth + 1; ++x) {
             wprintf(L"%lc", Menu_kBackground[index++]);
         }
     }
@@ -735,8 +740,8 @@ void GameState_update() {
 
         if (game.remainingPoint <= 0) { // 모든 포인트를 먹었다면 게임 승리
             Game_flash(3, 500);
-            gotoxy(10, 16);
-            textcolor(Color_LIGHT_WHITE, Color_YELLOW);
+            Cursor_moveXY(10, 16);
+            Cursor_setColor(Color_LIGHT_WHITE, Color_YELLOW);
             wprintf(L" Clear! ");
             Sleep(3000);
             game.previousTime = clock();
@@ -791,8 +796,8 @@ void GameState_update() {
                 // 플레이어가 이동 가능하다면 이동시킴
                 if (Player_isMovable(player, kNextPos)) {
                     player->pos = kNextPos;
-                    gotoxy(kPrevPos.x, kPrevPos.y);
-                    textcolor(Board_kTileFgColors[*tileAtPos], Board_kTileBgColors[*tileAtPos]);
+                    Cursor_moveXY(kPrevPos.x, kPrevPos.y);
+                    Cursor_setColor(Board_kTileFgColors[*tileAtPos], Board_kTileBgColors[*tileAtPos]);
                     wprintf(L"%lc", Board_kTileGlyphs[*tileAtPos]);
                 }
 
@@ -818,8 +823,8 @@ void GameState_update() {
                     // 유령이 이동 가능하다면 이동시킴
                     if (Ghost_isMovable(ghost, kNextPos)) {
                         ghost->pos = kNextPos;
-                        gotoxy(kPrevPos.x, kPrevPos.y);
-                        textcolor(Board_kTileFgColors[*tileAtPos], Board_kTileBgColors[*tileAtPos]);
+                        Cursor_moveXY(kPrevPos.x, kPrevPos.y);
+                        Cursor_setColor(Board_kTileFgColors[*tileAtPos], Board_kTileBgColors[*tileAtPos]);
                         wprintf(L"%lc", Board_kTileGlyphs[*tileAtPos]);
                     }
 
@@ -842,16 +847,16 @@ void GameState_update() {
             player->renderDeltaTime -= player->frameTimeStep; // 렌더링 업데이트 간격 만큼 변화량 감소
         }
         // 플레이어를 렌더링
-        gotoxy(player->pos.x, player->pos.y);
-        textcolor(player->color, Color_BLACK);
+        Cursor_moveXY(player->pos.x, player->pos.y);
+        Cursor_setColor(player->color, Color_BLACK);
         wprintf(L"%lc", Player_kFrameByDirs[player->dir][player->curFrame]);
 
         // Draw Ghost
         // 각 유령을 렌더링
         for (GhostType i = 0; i < GhostType_Count; ++i) {
             Ghost* ghost = ghosts[i];
-            gotoxy(ghost->pos.x, ghost->pos.y);
-            textcolor(ghost->curColor, Color_BLACK);
+            Cursor_moveXY(ghost->pos.x, ghost->pos.y);
+            Cursor_setColor(ghost->curColor, Color_BLACK);
             wprintf(L"%lc", Ghost_kFrameByState[ghost->curFrame]);
         }
 
@@ -859,8 +864,8 @@ void GameState_update() {
         // 업데이트 전 점수와 현재 점수가 다르다면
         if (game.currentScore != kScore) {
             // 점수 패널 갱신
-            gotoxy(31, 2);
-            textcolor(Color_LIGHT_WHITE, Color_BLACK);
+            Cursor_moveXY(31, 2);
+            Cursor_setColor(Color_LIGHT_WHITE, Color_BLACK);
             wprintf(L"%8d", game.currentScore);
         }
 
@@ -868,10 +873,10 @@ void GameState_update() {
         // 업데이트 전 목숨수와 현재 목숨수가 다르다면
         if (player->lifeRemaining != kLifeRemaining) {
             // 목숨 패널 갱신
-            gotoxy(31, 4);
-            textcolor(Color_LIGHT_YELLOW, Color_BLACK);
+            Cursor_moveXY(31, 4);
+            Cursor_setColor(Color_LIGHT_YELLOW, Color_BLACK);
             wprintf(L"Life");
-            textcolor(Color_LIGHT_WHITE, Color_BLACK);
+            Cursor_setColor(Color_LIGHT_WHITE, Color_BLACK);
             wprintf(L"x%d", player->lifeRemaining);
         }
 
@@ -894,38 +899,37 @@ void GameState_update() {
 // #endregion // Main_Function
 
 
-
 // #region Function_Defs
-void gotoxy(int x, int y) {
+void Cursor_moveXY(int x, int y) {
     COORD pos = { (short)x, (short)y };
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
-void setcursor(bool visible) {
+void Cursor_setVisible(bool visible) {
     CONSOLE_CURSOR_INFO curInfo;
     GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
     curInfo.bVisible = visible;
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
 }
 
-void textcolor(Color fg, Color bg) {
+void Cursor_setColor(Color fg, Color bg) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), fg | bg << 4u);
 }
 
-void cls_onProgramStart() {
+void Screen_clear_onProgramStart() {
     char cmd[100];
     system("cls"); // NOLINT
-    (void)snprintf(cmd, sizeof(cmd), "mode con: cols=%d lines=%d", SCREEN_WIDTH, SCREEN_HEIGHT);
+    (void)snprintf(cmd, sizeof(cmd), "mode con: cols=%d lines=%d", Screen_kWidth, Screen_kHeight);
     system(cmd); // NOLINT
-    (void)snprintf(cmd, sizeof(cmd), "title %s", kTitle);
+    (void)snprintf(cmd, sizeof(cmd), "title %s", Window_kTitle);
     system(cmd); // NOLINT
     _wsetlocale(LC_ALL, L"");
-    setcursor(false);
+    Cursor_setVisible(false);
 }
 
-void cls_onProgramEnd() {
+void Screen_clear_onProgramEnd() {
     system("cls"); // NOLINT
-    setcursor(true);
+    Cursor_setVisible(true);
 }
 
 static bool s_isFunctionKey  = false;
@@ -1115,32 +1119,32 @@ int Board_countRemainingPoint() {
 
 // 지정된 색상으로 전체 게임 보드의 벽을 깜박임. 타일 ​​값이 1(벽)이면 해당 타일의 전경색과 배경색을 color 매개변수로 설정 후 wprintf() 함수를 사용하여 해당 타일 문자를 출력
 void Board_flashWall(Color color) {
-    gotoxy(0, 0);
-    textcolor(color, color);
+    Cursor_moveXY(0, 0);
+    Cursor_setColor(color, color);
     for (int y = 0; y < Board_kHeight; ++y) {
         for (int x = 0; x < Board_kWidth; ++x) {
             int const kData = Board_dataAtXY(x, y);
             if (kData == 1) {
-                gotoxy(x, y);
+                Cursor_moveXY(x, y);
                 wprintf(L"%lc", Board_kTileGlyphs[kData]);
             }
         }
     }
-    textcolor(Color_BLACK, Color_BLACK);
+    Cursor_setColor(Color_BLACK, Color_BLACK);
 }
 
 // 게임 보드를 화면에 렌더링함. gotoxy() 함수를 사용하여 화면의 왼쪽 상단 모서리에 커서를 놓은 다음 g_boardData 배열의 각 요소를 반복, wprintf() 함수를 사용하여 해당 타일 문자를 출력, 타일의 전경색과 배경색은 각각 g_tileFgColorDate 및 g_tileBgColorDate 배열에 의해 결정
 void Board_draw() {
-    gotoxy(0, 0);
-    textcolor(Color_BLACK, Color_BLACK);
+    Cursor_moveXY(0, 0);
+    Cursor_setColor(Color_BLACK, Color_BLACK);
 
     for (int y = 0; y < Board_kHeight; ++y) {
         for (int x = 0; x < Board_kWidth; ++x) {
             int const kData = Board_dataAtXY(x, y);
-            textcolor(Board_kTileFgColors[kData], Board_kTileBgColors[kData]);
+            Cursor_setColor(Board_kTileFgColors[kData], Board_kTileBgColors[kData]);
             wprintf(L"%lc", Board_kTileGlyphs[kData]);
         }
-        textcolor(Color_BLACK, Color_BLACK);
+        Cursor_setColor(Color_BLACK, Color_BLACK);
         wprintf(L"\n");
     }
 }
@@ -1325,8 +1329,8 @@ void Ghost_update(Ghost* self, GhostType type, Player* player, int deltaTime) { 
             self->posTimeStep    = CLOCKS_PER_SEC / self->speedPerSecond;
 
             int tileAtGhostPos = Board_dataAtXY(kPx, kPy);
-            gotoxy(kPx, kPy);
-            textcolor(Board_kTileFgColors[tileAtGhostPos], Board_kTileBgColors[tileAtGhostPos]);
+            Cursor_moveXY(kPx, kPy);
+            Cursor_setColor(Board_kTileFgColors[tileAtGhostPos], Board_kTileBgColors[tileAtGhostPos]);
             wprintf(L"%lc", Board_kTileGlyphs[tileAtGhostPos]);
             return;
         }
@@ -1538,30 +1542,30 @@ void Game_reset() {
     Board_draw();
 
     // Draw Panel
-    gotoxy(31, 0);
-    textcolor(Color_RED, Color_BLACK);
+    Cursor_moveXY(31, 0);
+    Cursor_setColor(Color_RED, Color_BLACK);
     wprintf(L"HI-SCORE");
-    gotoxy(31, 1);
-    textcolor(Color_LIGHT_WHITE, Color_BLACK);
+    Cursor_moveXY(31, 1);
+    Cursor_setColor(Color_LIGHT_WHITE, Color_BLACK);
     wprintf(L"%8d", game.highScore);
-    gotoxy(31, 2);
+    Cursor_moveXY(31, 2);
     wprintf(L"%8d", game.currentScore);
 
-    gotoxy(31, 4);
-    textcolor(Color_LIGHT_YELLOW, Color_BLACK);
+    Cursor_moveXY(31, 4);
+    Cursor_setColor(Color_LIGHT_YELLOW, Color_BLACK);
     wprintf(L"Life");
-    textcolor(Color_LIGHT_WHITE, Color_BLACK);
+    Cursor_setColor(Color_LIGHT_WHITE, Color_BLACK);
     wprintf(L"x%d", game.player.lifeRemaining);
 
-    gotoxy(31, 6);
+    Cursor_moveXY(31, 6);
     wprintf(L"  W : UP");
-    gotoxy(31, 7);
+    Cursor_moveXY(31, 7);
     wprintf(L"  A : LEFT");
-    gotoxy(31, 8);
+    Cursor_moveXY(31, 8);
     wprintf(L"  S : RIGHT");
-    gotoxy(31, 9);
+    Cursor_moveXY(31, 9);
     wprintf(L"  D : DOWN");
-    gotoxy(31, 10);
+    Cursor_moveXY(31, 10);
     wprintf(L"ESC : Quit");
 
     // Reset Time
@@ -1641,8 +1645,8 @@ void Game_onPlayerEatenItem() {
 }
 
 void Game_onPlayerLost() {
-    gotoxy(6, 16);
-    textcolor(Color_LIGHT_WHITE, Color_PURPLE);
+    Cursor_moveXY(6, 16);
+    Cursor_setColor(Color_LIGHT_WHITE, Color_PURPLE);
     wprintf(L"lose the game...");
     Sleep(3000);
     game.currentTime = clock();
@@ -1650,8 +1654,8 @@ void Game_onPlayerLost() {
 }
 
 void Game_onPlayerWon() {
-    gotoxy(6, 16);
-    textcolor(Color_LIGHT_WHITE, Color_PURPLE);
+    Cursor_moveXY(6, 16);
+    Cursor_setColor(Color_LIGHT_WHITE, Color_PURPLE);
     wprintf(L"win the game...");
     Sleep(3000);
     game.currentTime = clock();
