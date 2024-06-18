@@ -15,7 +15,7 @@ ASCII Pacman is a simple implementation of the classic Pacman game using ASCII c
 
 ### Prerequisites
 
-- A C compiler (e.g., GCC, Clang, or MSVC)
+- C compiler (e.g., GCC, Clang, or MSVC)
 - Windows operating system (for sound support using winmm)
 
 ### Building and Running
@@ -80,7 +80,6 @@ bugs.)
 ## Contact
 
 For any questions or inquiries, please contact the project author:
-
 - Name: Gyeongtae Kim
 - Email: <codingpelican@gmail.com>
 
